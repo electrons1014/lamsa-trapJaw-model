@@ -114,7 +114,7 @@ classdef HillMuscleMotor2026 < Motor
 
             max_force = muscle_area * specific_tension * cosd(pennation_angle);
             range= (l_initial - min_length) * muscle_length;
-            velocity = muscle_vmax;
+            velocity = muscle_vmax * muscle_length * cosd(pennation_angle);
             
             % call parent constructor
             obj = obj@Motor(max_force, range, velocity, Force, muscle_length);

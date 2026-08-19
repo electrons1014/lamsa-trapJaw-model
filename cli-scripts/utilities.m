@@ -52,3 +52,5 @@ function [lamsa_met, mda_met] = simulate(components, mets)
 
     [mda_sol, mda_transitions] = solve_direct_actuation(load_motor, load);
     mda_met = get_metrics(mda_sol, mda_transitions, load, mets);
+
+end

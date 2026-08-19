@@ -54,7 +54,7 @@ classdef RotatingMass < Mass
             obj = obj@Mass(mass, EMA);
             obj.L1 = L1;
             obj.theta_0 = theta_0;
-            obj.theta_c = theta_f;
+            obj.theta_f = theta_f;
         end 
     end
 end

@@ -3,14 +3,14 @@ RUN_PATH = input('path to simulation run directory: ', 's');
 COMPONENTS_PATH = fullfile(RUN_PATH, 'components-config.json');
 METRICS_PATH = fullfile(RUN_PATH, 'metrics-config.json');
 
-component_order = ["load", "latch", "spring", "load_motor", "latch_motor"];
+component_order = {'load', 'latch', 'spring', 'load motor', 'latch motor'};
 component_config = jsondecode(fileread(COMPONENTS_PATH));
 
 if length(component_config) ~= length(component_order)
     error('components-config.json must describe all 5 components');
 end
 
-if ~isequal({component_order{:}}, {component_config.component})
+if ~isequal(component_order, {component_config.component})
     error('components-config.json must order components as load, latch, spring, load motor, latch motor');
 end
 

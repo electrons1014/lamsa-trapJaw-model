@@ -7,11 +7,11 @@ component_order = ["load", "latch", "spring", "load_motor", "latch_motor"];
 component_config = jsondecode(fileread(COMPONENTS_PATH));
 
 if length(component_config) ~= length(component_order)
-    error('parameters.json must describe all 5 components');
+    error('components-config.json must describe all 5 components');
 end
 
 if ~isequal({component_order{:}}, {component_config.component})
-    error('parameters.json must order components as load, latch, spring, load motor, latch motor');
+    error('components-config.json must order components as load, latch, spring, load motor, latch motor');
 end
 
 

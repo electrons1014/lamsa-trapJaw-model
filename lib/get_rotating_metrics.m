@@ -19,6 +19,9 @@ function metrics = get_metrics(sol, transition_times, load, met_names)
     %%% determine metrics and calculate each one
     metrics=containers.Map(met_names,zeros(length(met_names),1),'UniformValues',false);
 
+    if isKey(metrics, 'y_latch')
+        metrics('y_latch') = y0;
+
     if isKey(metrics, 't_unlatch')
         metrics('t_unlatch') = transition_times(1);
     end

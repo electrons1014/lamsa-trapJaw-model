@@ -28,7 +28,7 @@ classdef HillMuscleMotor2026 < Motor
     end
     
     methods
-        function obj = HillMuscleMotor(
+        function obj = HillMuscleMotor2026(
             muscle_length,
             muscle_area,
             pennation_angle,

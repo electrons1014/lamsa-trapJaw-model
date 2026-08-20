@@ -48,7 +48,7 @@ for run = 1:num_runs
     run_output = [run_output, values(lamsa_metrics)];
     run_output = [run_output, values(mda_metrics)];
 
-    sim_output = [sim_output; run_output]
+    sim_output = [sim_output; run_output];
 
     for param = 1:num_iterable
         if iterable_params{param, 3} < size(iterable_params{param, 4}, 2)
@@ -59,4 +59,4 @@ for run = 1:num_runs
     end
 end
 
-writetable(cell2table(sim_output), fullfile(RUN_PATH, 'simulation_outputs.csv'));
+writetable(cell2table(sim_output(2:end,:), 'VariableNames', sim_output(1,:)), fullfile(RUN_PATH, 'simulation_outputs.csv'));

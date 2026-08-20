@@ -59,4 +59,4 @@ for run = 1:num_runs
     end
 end
 
-writetable(cell2table(sim_output), fullfile(RUN_PATH, 'simulation_outputs.csv'))
+writetable(cell2table(sim_output), fullfile(RUN_PATH, 'simulation_outputs.csv'));

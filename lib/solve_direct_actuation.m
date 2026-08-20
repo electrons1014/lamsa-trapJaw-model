@@ -31,7 +31,7 @@ end
 T=[t];
 Y=[y];
 
-for i = 1:size(T)
+for i = 1:size(T,1)
     fMotor(i) = motor.Force(T(i), [Y(i,:)]);
 end
 fMotor = fMotor';

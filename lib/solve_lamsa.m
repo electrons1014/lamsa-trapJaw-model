@@ -268,7 +268,7 @@ end
 
 fSpring = zeros(size(T,1),1);
 fUnlatchingMotor = zeros(size(T,1),1);
-for i = 1:size(T)
+for i = 1:size(T,1)
     fSpring(i) = F_eff(load,spring,y0,T(i),[Y(i,1),Y(i,2)]);%fill out the fSpring vector to add to sol
     if (T(i) < t_unlatch(end))
         fUnlatchingMotor(i) = unlatching_motor.Force(T(i), X(i,:));

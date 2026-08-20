@@ -65,28 +65,24 @@ classdef HillMuscleMotor2026 < Motor
             % where alpha is in degrees, t is in seconds, l is in relative lengths, and v is in relative lengths/sec
             % see here for full literature referenced:
 
-            % normalized length and velocity, angle states
-            l = @(x) L_initial - x(1) / muscle_length; % convert to relative length
-            v = @(x) x(2) / muscle_length; % convert to relative velocity 
-            alpha = @(x) atand(sind(pennation_angle) / (cosd(pennation_angle)-1+l);
-
             % repeated values
             fl_frac = 1/(min_length-1)^2;
 
-            Force = @(t,x) (l <= 1) ... % no over extension
-                        * (l >= min_length) ... % zero negative range of fl curve
-                        * (v >= 0) ... % no modeling of negative velocity
-                        * (v <= muscle_vmax) ... % zero negative range of fv curve
+            Force = @(t,x) (L_initial - x(1) / muscle_length <= 1) ... % no over extension
+                        * (L_initial - x(1) / muscle_length >= min_length) ... % zero negative range of fl curve
+                        * (x(2) / muscle_length >= 0) ... % no modeling of negative velocity
+                        * (x(2) / muscle_length <= muscle_vmax) ... % zero negative range of fv curve
                         * muscle_area * specific_tension ... % maximum isometric force
-                        * cosd(alpha) ... % angular correction
+                        * cosd(atand(sind(pennation_angle) / (cosd(pennation_angle)-1+L_initial-x(1)/muscle_length))) ... % angular correction
                         * min(r_activation*t, 1) ... % activation curve F_time(t)
                         * ( ... 
                             (min_length*fl_curvature + 1 - fl_frac) ... 
-                            + (-(2*min_length+1)*fl_curvature + 2*fl_frac) * l ... 
-                            + ((min_length_2)*fl_curvature - fl_frac) * l^2 ... 
-                            + (-fl_curvature) * l^3 ... 
+                            + (-(2*min_length+1)*fl_curvature + 2*fl_frac) * (L_initial - x(1) / muscle_length) ... 
+                            + ((min_length+2)*fl_curvature - fl_frac) * (L_initial - x(1) / muscle_length)^2 ... 
+                            + (-fl_curvature) * (L_initial - x(1) / muscle_length)^3 ... 
                             ) ... % third order polynomial fl curve
-                        * (1 - v/(vmax*cosd(alpha))) / (1 + fv_curvature*v/(vmax*cosd(alpha))); % fv curve
+                        * (1 - (x(2)/muscle_length)/(muscle_vmax*cosd(atand(sind(pennation_angle) / (cosd(pennation_angle)-1+L_initial-x(1)/muscle_length))))) ... 
+                        / (1 + fv_curvature*(x(2)/muscle_length)/(muscle_vmax*cosd(atand(sind(pennation_angle) / (cosd(pennation_angle)-1+L_initial-x(1)/muscle_length))))); % fv curve
 
             max_force = muscle_area * specific_tension * cosd(pennation_angle);
             range= (L_initial - min_length) * muscle_length;

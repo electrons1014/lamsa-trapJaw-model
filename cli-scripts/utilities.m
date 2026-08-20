@@ -28,9 +28,9 @@ end
 
 
 %% helper function to create components from run parameters
-function components = initializeComponenets(component_config, run_params)
+function components = initializeComponents(component_config, run_params)
     component_names = {component_config.name};
-    componenets = cell(1,length(component_config));
+    components = cell(1,length(component_config));
     for component = 1:length(component_config)
         component_params = struct2cell(run_params{component});
         components{component} = feval(component_names{component}, component_params{:});
@@ -41,16 +41,10 @@ end
 %% helper function to run LaMSA and MDA simulations + report values for given components
 function [lamsa_met, mda_met] = simulate(components, mets)
 
-    load = components{1};
-    latch = components{2};
-    spring = components{3};
-    load_motor = componenets{4};
-    latch_motor = componenets{5};
-
-    [lamsa_sol, lamsa_transitions] = solve_lamsa(load_motor, latch_motor, load, latch, spring);
+    [lamsa_sol, lamsa_transitions] = solve_lamsa(components{4}, components{5}, components{1}, components{2}, components{3});
     lamsa_met = get_metrics(lamsa_sol, lamsa_transitions, load, mets);
 
-    [mda_sol, mda_transitions] = solve_direct_actuation(load_motor, load);
+    [mda_sol, mda_transitions] = solve_direct_actuation(components{4}, components{1});
     mda_met = get_metrics(mda_sol, mda_transitions, load, mets);
 
 end

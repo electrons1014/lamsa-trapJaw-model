@@ -38,7 +38,7 @@ end
 
 for run = 1:num_runs
     run_params = setRunParams(component_config, iterable_params);
-    components = initializeComponenets(component_config, run_params);
+    components = initializeComponents(component_config, run_params);
 
     [lamsa_metrics, mda_metrics] = simulate(components, metrics);
     run_output = cell(1, num_iterable);

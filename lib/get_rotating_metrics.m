@@ -6,14 +6,14 @@ function metrics = get_metrics(sol, transition_times, load, met_names)
     %   metrics specified in met_names
 
     m = load.mass;
-    L1 = load.L1
+    L1 = load.L1;
     L2 = L1 ./ load.EMA([0 0]);
     theta_0 = load.theta_0;
     theta_f = load.theta_f;
-    y0 = sol(1,2)
+    y0 = sol(1,2);
 
     %%% convert to angular space
-    sol(:,2) = asin((-sol(:,2).+y0.+L1.*sin(theta_0))./L1);
+    sol(:,2) = asin((y0-sol(:,2)+L1.*sin(theta_0))./L1);
     sol(:,3) = sol(:,3)./L1;
 
     %%% determine metrics and calculate each one
@@ -21,11 +21,12 @@ function metrics = get_metrics(sol, transition_times, load, met_names)
 
     if isKey(metrics, 'y_latch')
         metrics('y_latch') = y0;
+    end
 
     if isKey(metrics, 't_unlatch')
         metrics('t_unlatch') = transition_times(1);
     end
-    if isKey(metircs, 'theta_unlatch')
+    if isKey(metrics, 'theta_unlatch')
         index = find(sol(:,1)<=transition_times(1), 1, 'last');
         metrics('theta_unlatch') = sol(index, 2);
     end
@@ -39,13 +40,13 @@ function metrics = get_metrics(sol, transition_times, load, met_names)
     end
     if isKey(metrics, 'KE_unlatch')
         index = find(sol(:,1)<=transition_times(1), 1, 'last');
-        metrics('v_unlatch') = 0.5 .* m .* L1.^2 .* sol(index, 3).^2;
+        metrics('KE_unlatch') = 0.5 .* m .* L1.^2 .* sol(index, 3).^2;
     end
 
     if isKey(metrics, 't_takeoff')
         metrics('t_takeoff') = sol(end, 1);
     end
-    if isKey(metircs, 'theta_takeoff')
+    if isKey(metrics, 'theta_takeoff')
         metrics('theta_takeoff') = sol(end, 2);
     end
     if isKey(metrics, 'omega_takeoff')
@@ -55,11 +56,11 @@ function metrics = get_metrics(sol, transition_times, load, met_names)
         metrics('v_takeoff') = sol(end, 3) .* L2;
     end
     if isKey(metrics, 'KE_takeoff')
-        metrics('v_takeoff') = 0.5 .* m .* L1.^2 .* sol(end, 3).^2;
+        metrics('KE_takeoff') = 0.5 .* m .* L1.^2 .* sol(end, 3).^2;
     end
 
     if isKey(metrics, 't_close')
-        index = find(sol(:,2)<=theta_f, 1, 'first')
+        index = find(sol(:,2)<=theta_f, 1, 'first');
         if isempty(index)
             metrics('t_close') = sol(end, 1) + (sol(end, 2) - theta_f) / sol(end, 3);
         else

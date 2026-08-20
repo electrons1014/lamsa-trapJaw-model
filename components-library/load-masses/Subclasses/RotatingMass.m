@@ -13,7 +13,7 @@
 classdef RotatingMass < Mass
     
     properties
-        L1, theta_0
+        L1, theta_0, theta_f
     end
     
     methods (Static)

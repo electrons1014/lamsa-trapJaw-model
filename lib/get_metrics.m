@@ -9,9 +9,10 @@ function metrics = get_metrics(sol, transition_times, load, met_names)
     y0 = sol(1,2);
     v_const = 1;
     KE_const = 0.5 .* m;
+    angular = false;
 
-    if exist(load.L1)
-        angular = true
+    if isprop(load, 'L1')
+        angular = true;
         % define angular terms
         L1 = load.L1;
         L2 = L1 ./ load.EMA([0 0]);

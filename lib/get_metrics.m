@@ -6,15 +6,23 @@ function metrics = get_metrics(sol, transition_times, load, met_names)
     %   metrics specified in met_names
 
     m = load.mass;
-    L1 = load.L1;
-    L2 = L1 ./ load.EMA([0 0]);
-    theta_0 = load.theta_0;
-    theta_f = load.theta_f;
     y0 = sol(1,2);
+    v_const = 1;
+    KE_const = 0.5 .* m;
 
-    %%% convert to angular space
-    sol(:,2) = asin((y0-sol(:,2)+L1.*sin(theta_0))./L1);
-    sol(:,3) = sol(:,3)./L1;
+    if exist(load.L1)
+        angular = true
+        % define angular terms
+        L1 = load.L1;
+        L2 = L1 ./ load.EMA([0 0]);
+        theta_0 = load.theta_0;
+        theta_f = load.theta_f;
+        v_const = L2;
+        KE_const = 0.5 .* m .* L1.^2;
+
+        % convert metrics to angular space
+        sol(:,2) = asin((y0-sol(:,2)+L1.*sin(theta_0))./L1);
+        sol(:,3) = sol(:,3)./L1;
 
     %%% determine metrics and calculate each one
     metrics=containers.Map(met_names,zeros(length(met_names),1),'UniformValues',false);
@@ -36,11 +44,11 @@ function metrics = get_metrics(sol, transition_times, load, met_names)
     end
     if isKey(metrics, 'v_unlatch')
         index = find(sol(:,1)<=transition_times(1), 1, 'last');
-        metrics('v_unlatch') = sol(index, 3) .* L2;
+        metrics('v_unlatch') = v_const .* sol(index, 3);
     end
     if isKey(metrics, 'KE_unlatch')
         index = find(sol(:,1)<=transition_times(1), 1, 'last');
-        metrics('KE_unlatch') = 0.5 .* m .* L1.^2 .* sol(index, 3).^2;
+        metrics('KE_unlatch') = KE_const .* sol(index, 3).^2;
     end
 
     if isKey(metrics, 't_takeoff')
@@ -53,13 +61,13 @@ function metrics = get_metrics(sol, transition_times, load, met_names)
         metrics('omega_takeoff') = sol(end, 3);
     end
     if isKey(metrics, 'v_takeoff')
-        metrics('v_takeoff') = sol(end, 3) .* L2;
+        metrics('v_takeoff') = v_const .* sol(end, 3);
     end
     if isKey(metrics, 'KE_takeoff')
-        metrics('KE_takeoff') = 0.5 .* m .* L1.^2 .* sol(end, 3).^2;
+        metrics('KE_takeoff') = KE_const .* sol(end, 3).^2;
     end
 
-    if isKey(metrics, 't_close')
+    if isKey(metrics, 't_close') & angular
         index = find(sol(:,2)<=theta_f, 1, 'first');
         if isempty(index)
             metrics('t_close') = sol(end, 1) + (sol(end, 2) - theta_f) / sol(end, 3);

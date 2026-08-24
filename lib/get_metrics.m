@@ -23,6 +23,7 @@ function metrics = get_metrics(sol, transition_times, load, met_names)
         % convert metrics to angular space
         sol(:,2) = asin((y0-sol(:,2)+L1.*sin(theta_0))./L1);
         sol(:,3) = sol(:,3)./L1;
+    end
 
     %%% determine metrics and calculate each one
     metrics=containers.Map(met_names,zeros(length(met_names),1),'UniformValues',false);

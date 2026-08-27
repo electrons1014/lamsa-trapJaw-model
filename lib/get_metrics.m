@@ -7,6 +7,7 @@ function metrics = get_metrics(sol, transition_times, load, met_names)
 
     m = load.mass;
     y0 = sol(1,2);
+    yend = sol(end,2);
     v_const = 1;
     KE_const = 0.5 .* m;
     angular = false;
@@ -31,6 +32,9 @@ function metrics = get_metrics(sol, transition_times, load, met_names)
 
     if isKey(metrics, 'y_latch')
         metrics('y_latch') = y0;
+    end
+    if isKey(metrics, 'y_takeoff')
+        metrics('y_takeoff') = yend;
     end
 
     if isKey(metrics, 't_unlatch')

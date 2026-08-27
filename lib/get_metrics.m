@@ -10,10 +10,8 @@ function metrics = get_metrics(sol, transition_times, load, met_names)
     yend = sol(end,2);
     v_const = 1;
     KE_const = 0.5 .* m;
-    angular = false;
 
-    if isprop(load, 'L1')
-        angular = true;
+    if isa(load, 'RotatingMass')
         % define angular terms
         L1 = load.L1;
         L2 = L1 ./ load.EMA([0 0]);
@@ -73,7 +71,7 @@ function metrics = get_metrics(sol, transition_times, load, met_names)
         metrics('KE_takeoff') = KE_const .* sol(end, 3).^2;
     end
 
-    if isKey(metrics, 't_close') & angular
+    if isKey(metrics, 't_close') & isa(load, 'RotatingMass')
         index = find(sol(:,2)<=theta_f, 1, 'first');
         if isempty(index)
             metrics('t_close') = sol(end, 1) + (sol(end, 2) - theta_f) / sol(end, 3);

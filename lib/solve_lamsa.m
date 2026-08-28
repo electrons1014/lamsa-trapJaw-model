@@ -376,42 +376,45 @@ end
 % calculate m_eff for rotating systems
 function mass = m_eff(load, spring, y0, y)
 
-mass = load.mass;
+    mass = load.mass;
 
-if isa(load, 'RotatingMass')
-    y = y(1);
-    if y > 0
-        y = 0;
+    if isa(load, 'RotatingMass')
+        y = -y(1);
+        if y < 0
+            y = 0;
+        end
+        L = spring.rest_length + y;
+        lambda = load.L1;
+        theta_0 = load.theta_0;
+        x_p = load.x_p;
+        y_p = sqrt((spring.rest_length-y0)^2 - (x_p-lambda*cos(theta_0)^2)) - lambda*sin(theta_0);
+        theta = asin((-y+y0+L1*sin(theta_0))/L1);
+        mass = mass/cos(theta) + 1E2*(abs(theta) > pi/2);
     end
-    L1 = load.L1;
-    theta_0 = load.theta_0;
-    theta = asin((-y+y0+L1*sin(theta_0))/L1);
-    mass = mass/cos(theta) + 1E2*(abs(theta) > pi/2);
-end
 
-mass = mass + spring.mass/3;
+    mass = mass + spring.mass/3;
 
 end
 
 % calculate F_eff for rotating systems
 function Force = F_eff(load, spring, y0, t, y)
 
-Force = spring.Force(t, y);
+    Force = spring.Force(t, y);
 
-if isa(load, 'RotatingMass')
-    
-    y1 = spring.rest_length + abs(y0);
-    y2 = spring.rest_length + abs(y(1));
-    theta_0 = load.theta_0;
-    L1 = load.L1;
-    m = load.mass;
-    
-    theta = asin((-y(1)+y0+L1*sin(theta_0))/L1);
-    alpha = acos((y2^2-y1^2+2*y1*L1*sin(theta_0))/(2*y2*L1));
-    
-    Force = real( Force*sin(alpha) - abs(m*sin(theta)*y(2)^2/(L1*cos(theta)^3))) * (abs(theta) < pi/2);
-    Force = Force * (Force > 0);
-end
+    if isa(load, 'RotatingMass')
+        
+        y1 = spring.rest_length + abs(y0);
+        y2 = spring.rest_length + abs(y(1));
+        theta_0 = load.theta_0;
+        L1 = load.L1;
+        m = load.mass;
+        
+        theta = asin((-y(1)+y0+L1*sin(theta_0))/L1);
+        alpha = acos((y2^2-y1^2+2*y1*L1*sin(theta_0))/(2*y2*L1));
+        
+        Force = real( Force*sin(alpha) - abs(m*sin(theta)*y(2)^2/(L1*cos(theta)^3))) * (abs(theta) < pi/2);
+        Force = Force * (Force > 0);
+    end
 
 end
 
